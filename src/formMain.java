@@ -1,6 +1,5 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.*;
 
 
 public class formMain extends JFrame{
@@ -10,6 +9,8 @@ public class formMain extends JFrame{
     private JFormattedTextField textASCII;
     private JButton buttonDecimal;
     private JButton buttonASCII;
+    private JButton buttonSave;
+    private JButton buttonUpload;
 
     public static String AsciiToBinary(String asciiString){
 
@@ -28,6 +29,20 @@ public class formMain extends JFrame{
         return binary.toString();
     }
 
+    public static void WriteToFile(String text) {
+        try {
+            FileWriter myWriter = new FileWriter("BinaryConverterOutput.txt");
+            myWriter.write(text);
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     public formMain() {
         super("Binary Converter");
@@ -35,27 +50,30 @@ public class formMain extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
 
-        buttonDecimal.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String decimal = textDecimal.getText();
-                textResult.setText(Integer.toBinaryString(Integer.parseInt(String.valueOf(decimal))));
-            }
+        buttonDecimal.addActionListener(e -> {
+            String decimal = textDecimal.getText();
+            textResult.setText(Integer.toBinaryString(Integer.parseInt(String.valueOf(decimal))));
         });
 
-        buttonASCII.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = textASCII.getText();
-                StringBuilder result = new StringBuilder();
-                for (int i = 0; i < text.length(); i++) {
-                    result.append(AsciiToBinary(String.valueOf(text.charAt(i))));
-                }
-                textResult.setText(String.valueOf(result));
+        buttonASCII.addActionListener(e -> {
+            String text = textASCII.getText();
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < text.length(); i++) {
+                result.append(AsciiToBinary(String.valueOf(text.charAt(i))));
             }
+            textResult.setText(String.valueOf(result));
         });
+
+        buttonSave.addActionListener(e -> {
+            WriteToFile(textResult.getText());
+            System.out.println("Successfully written to file.");
+        });
+
     }
-
+    
+    //TODO: Possibly add Hex functionality
+    //TODO: Add "Read From File" functionality
+    //TODO: Make a CLI version with file I/O
 
     public static void main(String[] args) {
         formMain screen = new formMain();
