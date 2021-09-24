@@ -13,9 +13,13 @@ public class formMain extends JFrame{
     private JButton buttonSave;
     private JFormattedTextField textHex;
     private JButton buttonHex;
+    private JButton buttonImport;
+    private JRadioButton radioDecimal;
+    private JRadioButton radioAscii;
+    private JRadioButton radioHex;
+
 
     public static String AsciiToBinary(String asciiString){
-
         byte[] bytes = asciiString.getBytes();
         StringBuilder binary = new StringBuilder();
         for (byte b : bytes)
@@ -26,6 +30,7 @@ public class formMain extends JFrame{
                 binary.append((val & 128) == 0 ? 0 : 1);
                 val <<= 1;
             }
+            // adds spaces between binary strings
             binary.append(' ');
         }
         return binary.toString();
@@ -97,7 +102,9 @@ public class formMain extends JFrame{
 
 
     public static void WriteToFile(String text) {
+        // check for IOException
         try {
+            // write file out to text
             FileWriter myWriter = new FileWriter("BinaryConverterOutput.txt");
             myWriter.write(text);
             myWriter.close();
@@ -108,38 +115,45 @@ public class formMain extends JFrame{
         }
     }
 
-
+    public static String DecToBinary(long decimal) {
+        // boolean to check if number larger than 64bits
+        boolean overflow = false;
+        try {
+            if (decimal > 19) {
+                overflow = true;
+            }
+            // sends text if input passes tests
+            System.out.println(String.valueOf(decimal).length());
+            return Long.toBinaryString(decimal);
+        } catch (Exception E) {
+            if (overflow) {
+                // number larger than 64bits
+                System.out.println("Number too large");
+                return "Number too large";
+            } else {
+                // invalid character error
+                System.out.println("Error, you tried putting a non decimal character into the decimal section. use the ASCII form for text");
+                return "Invalid Decimal String";
+            }
+        }
+    }
 
 
     public formMain() {
+        // set form constructor
         super("Binary Converter");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
 
         buttonDecimal.addActionListener(e -> {
-            long decimal = 0;
-            boolean overflow = false;
-            try {
-                if (textDecimal.getText().length() > 19) {
-                    overflow = true;
-                }
-                decimal = Long.parseLong(textDecimal.getText());
-                System.out.println(String.valueOf(decimal).length());
-                textResult.setText(Long.toBinaryString(decimal));
-            } catch (Exception E) {
-                if (overflow) {
-                    System.out.println("Number too large");
-                    textResult.setText("Number too large");
-                } else {
-                System.out.println("Error, you tried putting a non decimal character into the decimal section. use the ASCII form for text");
-                textResult.setText("Invalid Decimal String");
-                }
-            }
+            long dec = Long.parseLong(textDecimal.getText());
+            textResult.setText(DecToBinary(dec));
         });
 
         buttonASCII.addActionListener(e -> {
             String text = textASCII.getText();
+            // builds binary String from ascii function
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < text.length(); i++) {
                 result.append(AsciiToBinary(String.valueOf(text.charAt(i))));
@@ -154,9 +168,54 @@ public class formMain extends JFrame{
             System.out.println("Successfully written to file.");
         });
 
+        buttonImport.addActionListener(e -> {
+            File file = null;
+            // file window call
+            JFileChooser fileChooser = new JFileChooser();
+            int returnVal = fileChooser.showOpenDialog(formMain.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                file = fileChooser.getSelectedFile();
+            }
+            assert file != null;
+            String filePath = file.getPath();
+            // StringBuilder to read file
+            StringBuilder sb = new StringBuilder();
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(filePath));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+            } catch (IOException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            }
+            String stringToConvert = sb.toString();
+            // functionality to decide which converter to use
+            if (radioDecimal.isSelected()) {
+                long dec = Long.parseLong(stringToConvert.trim());
+                textResult.setText(DecToBinary(dec));
+            } else if (radioHex.isSelected()) {
+                StringBuilder res = new StringBuilder();
+                for (int i = 0; i < stringToConvert.length(); i++) {
+                    assert false;
+                    if (i == stringToConvert.length() - 1) {
+                        break;
+                    }
+                    res.append(hexToBinary(String.valueOf(stringToConvert.charAt(i))));
+                }
+                assert false;
+                textResult.setText(res.toString());
+            } else if (radioAscii.isSelected()) {
+                // builds binary String from ascii function
+                StringBuilder result = new StringBuilder();
+                for (int i = 0; i < stringToConvert.length(); i++) {
+                    result.append(AsciiToBinary(String.valueOf(stringToConvert.charAt(i))));
+                }
+                textResult.setText(String.valueOf(result));
+            }
+        });
     }
 
-    //TODO: Add "Read From File" functionality
     //TODO: Make a CLI version with file I/O
 
     public static void main(String[] args) {
