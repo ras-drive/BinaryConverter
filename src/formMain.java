@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.io.*;
 import java.util.HashMap;
 import javax.swing.JFileChooser;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 
 
 public class formMain extends JFrame{
@@ -18,6 +21,8 @@ public class formMain extends JFrame{
     private JRadioButton radioDecimal;
     private JRadioButton radioAscii;
     private JRadioButton radioHex;
+    private JButton buttonCopy;
+    protected JLabel labelType;
 
 
     public static String AsciiToBinary(String asciiString){
@@ -124,7 +129,6 @@ public class formMain extends JFrame{
                 overflow = true;
             }
             // sends text if input passes tests
-            System.out.println(String.valueOf(decimal).length());
             return Long.toBinaryString(decimal);
         } catch (Exception E) {
             if (overflow) {
@@ -220,6 +224,18 @@ public class formMain extends JFrame{
                     result.append(AsciiToBinary(String.valueOf(stringToConvert.charAt(i))));
                 }
                 textResult.setText(String.valueOf(result));
+            }
+        });
+
+        buttonCopy.addActionListener(e -> {
+            // checks if the result field is blank
+            if (!textResult.getText().equals("")) {
+                // grabs text from result field and copies them to the clipboard
+                StringSelection stringSelection = new StringSelection(textResult.getText());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+            }  else {
+                System.out.println("Text result is empty, nothing copied to clipboard");
             }
         });
     }
