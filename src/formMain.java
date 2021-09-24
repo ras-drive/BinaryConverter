@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.io.*;
 import java.util.HashMap;
+import javax.swing.JFileChooser;
 
 
 public class formMain extends JFrame{
@@ -101,11 +102,11 @@ public class formMain extends JFrame{
     }
 
 
-    public static void WriteToFile(String text) {
+    public static void WriteToFile(String text, String location) {
         // check for IOException
         try {
             // write file out to text
-            FileWriter myWriter = new FileWriter("BinaryConverterOutput.txt");
+            FileWriter myWriter = new FileWriter(location);
             myWriter.write(text);
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
@@ -164,15 +165,22 @@ public class formMain extends JFrame{
         buttonHex.addActionListener(e -> textResult.setText(hexToBinary(textHex.getText())));
 
         buttonSave.addActionListener(e -> {
-            WriteToFile(textResult.getText());
+            // WriteToFile(textResult.getText());
             System.out.println("Successfully written to file.");
+            // file window call
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                System.out.println("Save as file: " + file.getAbsolutePath());
+                WriteToFile(textResult.getText(), file.getAbsolutePath());
+            }
         });
 
         buttonImport.addActionListener(e -> {
             File file = null;
             // file window call
             JFileChooser fileChooser = new JFileChooser();
-            int returnVal = fileChooser.showOpenDialog(formMain.this);
+            int returnVal = fileChooser.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
             }
@@ -220,6 +228,7 @@ public class formMain extends JFrame{
 
     public static void main(String[] args) {
         formMain screen = new formMain();
+        screen.setSize(640, 480);
         screen.setVisible(true);
     }
 }

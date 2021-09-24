@@ -14,7 +14,11 @@
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <editable value="false"/>
+          <lineWrap value="true"/>
+          <rows value="16"/>
+        </properties>
       </component>
       <component id="e4466" class="javax.swing.JFormattedTextField" binding="textDecimal">
         <constraints>
