@@ -1,2 +1,2 @@
 # BinaryConverter
-Simple GUI Decimal to Binary and ASCII Text to Binary translator built in java. Will be adding more functionality, such as writing to files and such at a later date.
+Simple GUI Decimal to Binary, Hex to Binary, and ASCII Text to Binary translator built in java. Supports saving to a file after converting and importing from a text file.
